@@ -57,30 +57,31 @@ class AjaxController extends Controller
 
         $installedLibraries = H5pLibrary::all();
 
-        $response['libraries'] = collect($response['libraries'])->map(function ($lib) use ($installedLibraries) {
-            $lib['installed'] = $installedLibraries->contains('name', $lib['machineName']);
+        if($response) {
+            $response['libraries'] = collect($response['libraries'])->map(function ($lib) use ($installedLibraries) {
+                $lib['installed'] = $installedLibraries->contains('name', $lib['machineName']);
 
-            if ($lib['installed']) {
-                $installedLibrary = $installedLibraries->filter(function ($installedLib) use ($lib) {
-                    return $installedLib['name'] == $lib['machineName'];
-                })->first();
+                if ($lib['installed']) {
+                    $installedLibrary = $installedLibraries->filter(function ($installedLib) use ($lib) {
+                        return $installedLib['name'] == $lib['machineName'];
+                    })->first();
 
-                $lib['localMajorVersion'] = $installedLibrary->major_version;
-                $lib['localMinorVersion'] = $installedLibrary->minor_version;
-                $lib['localPatchVersion'] = $installedLibrary->patch_version;
-            }
+                    $lib['localMajorVersion'] = $installedLibrary->major_version;
+                    $lib['localMinorVersion'] = $installedLibrary->minor_version;
+                    $lib['localPatchVersion'] = $installedLibrary->patch_version;
+                }
 
-            return $lib;
-        });
-
-        return $response;
+                return $lib;
+            });
+            return $response;
+        }
     }
 
     public function libraryInstall(Request $request)
     {
         $h5p = App::make('LaravelH5p');
         $editor = $h5p::$h5peditor;
-        $editor->ajax->action(H5PEditorEndpoints::LIBRARY_INSTALL, $request->get('_token'), $request->get('machineName'));
+        $editor->ajax->action(H5PEditorEndpoints::LIBRARY_INSTALL, $request->get('_token'), $request->get('id'));
     }
 
     public function libraryUpload(Request $request)

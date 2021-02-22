@@ -586,6 +586,14 @@ class LaravelH5pStorage implements H5PFileStorage
      */
     public function saveFileFromZip($path, $file, $stream)
     {
-        return true;
+        $filePath = $path . '/' . $file;
+
+        // Make sure the directory exists first
+        $matches = array();
+        preg_match('/(.+)\/[^\/]*$/', $filePath, $matches);
+        self::dirReady($matches[1]);
+
+        // Store in local storage folder
+        return file_put_contents($filePath, $stream);
     }
 }
