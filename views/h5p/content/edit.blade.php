@@ -151,7 +151,7 @@
                 <div class="d-flex justify-content-between w-100">
 
                     <button class="btn btn-danger h5p-delete" data-delete="{{ route('h5p.destroy', $id) }}" type="button">
-                        {{ __('strings.delete') }}
+                        {{ trans('laravel-h5p.content.destroy') }}
                     </button>
 
                     <div>
