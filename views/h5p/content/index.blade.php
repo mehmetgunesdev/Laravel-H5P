@@ -46,7 +46,7 @@
                         </td>
 
                         <td class="">
-                            {{ $entry->get_user()->name }}
+                            {{ isset($entry->get_user()->name) ? $entry->get_user()->name : '' }}
                         </td>
 
                         <td class="text-left">
