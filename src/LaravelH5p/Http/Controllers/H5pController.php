@@ -15,6 +15,7 @@ class H5pController extends Controller
 {
     public function index(Request $request)
     {
+        $h5p = App::make('LaravelH5p');
         $where = H5pContent::orderBy('h5p_contents.id', 'desc');
 
         if ($request->query('sf') && $request->query('s')) {
@@ -33,7 +34,10 @@ class H5pController extends Controller
         $entrys = $where->paginate(10);
         $entrys->appends(['sf' => $request->query('sf'), 's' => $request->query('s')]);
 
-        return view('h5p.content.index', compact('entrys', 'request', 'search_fields'));
+        // view Get the file and settings to print from
+        $settings = $h5p::get_editor();
+
+        return view('h5p.content.index', compact('entrys', 'request', 'search_fields', 'settings'));
     }
 
     public function create(Request $request)
