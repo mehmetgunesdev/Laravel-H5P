@@ -33,6 +33,7 @@ class H5pContent extends Model
         'default_languge',
         'keywords',
         'description',
+        'course_id'
     ];
 
     public function user()

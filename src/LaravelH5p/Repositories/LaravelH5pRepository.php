@@ -412,6 +412,11 @@ class LaravelH5pRepository implements H5PFrameworkInterface
         if (!isset($entry['id'])) {
             $content['created_at'] = isset($entry['created_at']) ? $entry['created_at'] : Carbon::now();
 
+            //Course id
+            if(session()->get('course')) {
+                $content['course_id'] = session()->get('course');
+            }
+
             // Insert new content
             $return = H5pContent::create($content);
             $content['id'] = $return->id;

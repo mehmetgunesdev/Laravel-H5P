@@ -10,11 +10,16 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use InHub\LaravelH5p\Exceptions\H5PException;
+use MongoDB\Driver\Session;
 
 class H5pController extends Controller
 {
     public function index(Request $request)
     {
+        if($request->get('course')) {
+            \session()->put('course', $request->get('course'));
+        }
+
         $h5p = App::make('LaravelH5p');
         $where = H5pContent::orderBy('h5p_contents.id', 'desc');
 
@@ -25,6 +30,12 @@ class H5pController extends Controller
             if ($request->query('sf') == 'creator') {
                 $where->leftJoin('users', 'users.id', 'h5p_contents.user_id')->where('users.name', 'like', '%'.$request->query('s').'%');
             }
+        }
+
+        //Get by course id
+        if($request->get('course') || session()->get('course')) {
+            $course_id = $request->get('course') ? $request->get('course') : session()->get('course');
+            $where->where('h5p_contents.course_id', $course_id);
         }
 
         $search_fields = [
