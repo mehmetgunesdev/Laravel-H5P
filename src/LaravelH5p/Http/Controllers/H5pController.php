@@ -149,7 +149,7 @@ class H5pController extends Controller
 
             if ($return_id) {
                 return redirect()
-                    ->route('h5p.edit', $return_id)
+                    ->route('h5p.index', $return_id)
                     ->with('success', trans('laravel-h5p.content.created'));
             } else {
                 return redirect()
