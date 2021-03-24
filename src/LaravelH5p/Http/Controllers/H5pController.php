@@ -133,7 +133,7 @@ class H5pController extends Controller
                 $content['id'] = $core->saveContent($content);
 
                 // Move images and find all content dependencies
-                $editor->processParameters($content['id'], $content['library'], $params, $oldLibrary, $oldParams);
+                $editor->processParameters($content['id'], $content['library'], $params->params, $oldLibrary, $oldParams);
 
                 event(new H5pEvent('content', $event_type, $content['id'], $content['title'], $content['library']['machineName'], $content['library']['majorVersion'], $content['library']['minorVersion']));
 
@@ -257,7 +257,7 @@ class H5pController extends Controller
                 $core->saveContent($content);
 
                 // Move images and find all content dependencies
-                $editor->processParameters($content['id'], $content['library'], $params, $oldLibrary, $oldParams);
+                $editor->processParameters($content['id'], $content['library'], $params->params, $oldLibrary, $oldParams);
 
                 event(new H5pEvent('content', $event_type, $content['id'], $content['title'], $content['library']['machineName'], $content['library']['majorVersion'], $content['library']['minorVersion']));
 
