@@ -56,7 +56,7 @@ class LibraryController extends Controller
         } else {
             $settings['libraryList']['notCached'] = 0;
         }
-
+		$hubOn = config('laravel-h5p.h5p_hub_is_enabled');
         return view('h5p.library.index', compact('entrys', 'settings', 'last_update', 'hubOn', 'required_files'));
     }
 
