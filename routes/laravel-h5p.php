@@ -3,7 +3,7 @@
 Route::group(['middleware' => ['web']], function () {
     if (config('laravel-h5p.use_router') == 'EDITOR' || config('laravel-h5p.use_router') == 'ALL') {
         Route::resource('h5p', "InHub\LaravelH5p\Http\Controllers\H5pController");
-        Route::group(['middleware' => ['auth']], function () {
+//        Route::group(['middleware' => ['auth']], function () {
 //            Route::get('h5p/export', 'InHub\LaravelH5p\Http\Controllers\H5pController@export')->name("h5p.export");
 
             Route::get('library',
@@ -18,7 +18,7 @@ Route::group(['middleware' => ['web']], function () {
                 "InHub\LaravelH5p\Http\Controllers\LibraryController@restrict")->name('h5p.library.restrict');
             Route::post('library/clear',
                 "InHub\LaravelH5p\Http\Controllers\LibraryController@clear")->name('h5p.library.clear');
-        });
+//        });
 
         // ajax
         Route::match(['GET', 'POST'], 'ajax/libraries',
