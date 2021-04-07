@@ -416,13 +416,13 @@ class LaravelH5pStorage implements H5PFileStorage
         }
 
         // Successfully loaded content json of file into editor
-        $h5pJson = $this->getContent($source.DIRECTORY_SEPARATOR.'h5p.json');
-        $contentJson = $this->getContent($contentSource.DIRECTORY_SEPARATOR.'content.json');
-
-        return (object) [
-            'h5pJson'     => $h5pJson,
-            'contentJson' => $contentJson,
-        ];
+//        $h5pJson = $this->getContent($source.DIRECTORY_SEPARATOR.'h5p.json');
+//        $contentJson = $this->getContent($contentSource.DIRECTORY_SEPARATOR.'content.json');
+//
+//        return (object) [
+//            'h5pJson'     => $h5pJson,
+//            'contentJson' => $contentJson,
+//        ];
     }
 
     /**

@@ -92,6 +92,14 @@ class AjaxController extends Controller
         $editor->ajax->action(H5PEditorEndpoints::LIBRARY_UPLOAD, $request->get('_token'), $filePath, $request->get('contentId'));
     }
 
+    public function ajax_filter(Request $request) {
+        $token = filter_input(INPUT_GET, 'token', FILTER_SANITIZE_STRING);
+        $libraryParameters = filter_input(INPUT_POST, 'libraryParameters');
+        $h5p = App::make('LaravelH5p');
+        $editor = $h5p::$h5peditor;
+        $editor->ajax->action(H5PEditorEndpoints::FILTER, $token, $libraryParameters);
+    }
+
     public function files(Request $request)
     {
         $filePath = $request->file('file');

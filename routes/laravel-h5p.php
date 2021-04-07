@@ -41,6 +41,8 @@ Route::group(['middleware' => ['web']], function () {
             'InHub\LaravelH5p\Http\Controllers\AjaxController@finish')->name('h5p.ajax.finish');
         Route::post('ajax/content-user-data',
             'InHub\LaravelH5p\Http\Controllers\AjaxController@contentUserData')->name('h5p.ajax.content-user-data');
+        Route::post('ajax/filter',
+            'InHub\LaravelH5p\Http\Controllers\AjaxController@ajax_filter')->name('h5p.ajax.filter');
     }
 
     // export
