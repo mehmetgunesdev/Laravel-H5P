@@ -372,6 +372,7 @@ class LaravelH5p
             'url'             => route('h5p.embed', ['id' => $content['id']]),
             'title'           => $content['title'],
             'displayOptions'  => self::$core->getDisplayOptionsForView($content['disable'], $author_id),
+            'metadata' => $content['metadata'],
             'contentUserData' => [
                 0 => [
                     'state' => '{}',
