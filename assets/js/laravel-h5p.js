@@ -57,19 +57,27 @@
                 $type.filter('input[value="create"]').attr('checked', true).change();
             }
 
-            $('#laravel-h5p-form').submit(function () {
-                if (h5peditor !== undefined) {
-                    var params = h5peditor.getParams();
+            let formIsUpdated = false;
+            const $form = $('#laravel-h5p-form').submit(function (e) {
+                if (h5peditor !== undefined && !formIsUpdated) {
 
-                    if (params !== undefined) {
-                        $library.val(h5peditor.getLibrary());
-                        $params.val(JSON.stringify(params));
-                    } else {
-                        return false;
-                    }
+                    // Get content from editor
+                    h5peditor.getContent(function (content) {
+
+                        // Set main library
+                        $library.val(content.library);
+
+                        // Set params
+                        $params.val(content.params);
+
+                        // Submit form data
+                        formIsUpdated = true;
+                        $form.submit();
+                    });
+
+                    // Stop default submit
+                    e.preventDefault();
                 }
-
-                $(this).find('.btn').button('loading');
             });
 
             // Title label
