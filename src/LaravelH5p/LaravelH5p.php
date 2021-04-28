@@ -287,7 +287,7 @@ class LaravelH5p
             ],
             'ajaxPath' => route('h5p.ajax').'/',
             // for checkeditor,
-            'libraryUrl'         => self::get_h5peditor_url(),
+            'libraryUrl'         => self::get_h5peditor_url().'/',
             'copyrightSemantics' => self::$contentvalidator->getCopyrightSemantics(),
             'metadataSemantics'  => self::$contentvalidator->getMetadataSemantics(),
             'assets'             => [],
