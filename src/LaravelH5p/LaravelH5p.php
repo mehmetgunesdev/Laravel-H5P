@@ -267,7 +267,7 @@ class LaravelH5p
 
         $settings['core']['scripts'][] = self::get_h5peditor_url('/scripts/h5peditor-editor.js');
 
-        $settings['core']['scripts'][] = self::get_laravelh5p_url('/js/laravel-h5p.js');
+        $settings['core']['scripts'][] = self::get_laravelh5p_url('/js/laravel-h5p.js?v=1.0.0');
         $settings['core']['scripts'][] = self::get_h5peditor_url('/language/en.js');
         $settings['core']['scripts'][] = self::get_h5pcore_url('/js/h5p-display-options.js');
 
