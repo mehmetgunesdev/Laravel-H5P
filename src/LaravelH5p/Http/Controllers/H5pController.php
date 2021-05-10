@@ -16,7 +16,9 @@ class H5pController extends Controller
 {
     public function index(Request $request)
     {
+        $course = null;
         if($request->get('course')) {
+            $course = $request->get('course');
             \session()->put('course', $request->get('course'));
         }
 
@@ -48,13 +50,18 @@ class H5pController extends Controller
         // view Get the file and settings to print from
         $settings = $h5p::get_editor();
 
-        return view('h5p.content.index', compact('entrys', 'request', 'search_fields', 'settings'));
+        return view('h5p.content.index', compact('entrys', 'request', 'search_fields', 'settings','course'));
     }
 
     public function create(Request $request)
     {
         $h5p = App::make('LaravelH5p');
         $core = $h5p::$core;
+
+        $course = null;
+        if($request->get('course')) {
+            $course = $request->get('course');
+        }
 
         // Prepare form
         $library = 0;
@@ -70,7 +77,7 @@ class H5pController extends Controller
 
         $user = Auth::user();
 
-        return view('h5p.content.create', compact('settings', 'user', 'library', 'parameters', 'display_options'));
+        return view('h5p.content.create', compact('settings', 'user', 'library', 'parameters', 'display_options','course'));
     }
 
     public function store(Request $request)
@@ -78,6 +85,11 @@ class H5pController extends Controller
         $h5p = App::make('LaravelH5p');
         $core = $h5p::$core;
         $editor = $h5p::$h5peditor;
+
+        $course = null;
+        if($request->get('course')) {
+            $course = $request->get('course');
+        }
 
         $this->validate($request, [
             'action' => 'required',
@@ -97,7 +109,7 @@ class H5pController extends Controller
         ];
 
         $content['filtered'] = '';
-
+        $content['course'] = $course;
         try {
             if ($request->get('action') === 'create') {
                 $content['library'] = $core->libraryFromString($request->get('library'));
@@ -149,16 +161,16 @@ class H5pController extends Controller
 
             if ($return_id) {
                 return redirect()
-                    ->route('h5p.index', $return_id)
+                    ->route('h5p.index', ['course' => $course])
                     ->with('success', trans('laravel-h5p.content.created'));
             } else {
                 return redirect()
-                    ->route('h5p.create')
+                    ->route('h5p.create', ['course' => $course])
                     ->with('fail', trans('laravel-h5p.content.can_not_created'));
             }
         } catch (H5PException $ex) {
             return redirect()
-                ->route('h5p.create')
+                ->route('h5p.create', ['course' => $course])
                 ->with('fail', trans('laravel-h5p.content.can_not_created'));
         }
     }
@@ -168,6 +180,11 @@ class H5pController extends Controller
         $h5p = App::make('LaravelH5p');
         $core = $h5p::$core;
         $editor = $h5p::$h5peditor;
+
+        $course = null;
+        if($request->get('course')) {
+            $course = $request->get('course');
+        }
 
         $settings = $h5p::get_core();
         $content = $h5p->get_content($id);
@@ -195,7 +212,7 @@ class H5pController extends Controller
 
         $user = Auth::user();
 
-        return view('h5p.content.edit', compact('settings', 'user', 'id', 'content', 'library', 'parameters', 'display_options'));
+        return view('h5p.content.edit', compact('settings', 'user', 'id', 'content', 'library', 'parameters', 'display_options','course'));
     }
 
     public function update(Request $request, $id)
@@ -203,6 +220,11 @@ class H5pController extends Controller
         $h5p = App::make('LaravelH5p');
         $core = $h5p::$core;
         $editor = $h5p::$h5peditor;
+
+        $course = null;
+        if($request->get('course')) {
+            $course = $request->get('course');
+        }
 
         $this->validate($request, [
             'action' => 'required',
@@ -273,7 +295,7 @@ class H5pController extends Controller
 
             if ($return_id) {
                 return redirect()
-                    ->route('h5p.edit', $return_id)
+                    ->route('h5p.edit', ['h5p' => $return_id, $course => 'course'])
                     ->with('success', trans('laravel-h5p.content.updated'));
             } else {
                 return redirect()
