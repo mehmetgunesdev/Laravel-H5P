@@ -168,44 +168,51 @@ class LaravelH5p
     public function get_embed($content, $settings, $no_cache = false)
     {
         // Detemine embed type
-        $embed = H5PCore::determineEmbedType($content['embedType'], $content['library']['embedTypes']);
-        // Make sure content isn't added twice
-        $cid = 'cid-'.$content['id'];
-        if (!isset($settings['contents'][$cid])) {
-            $settings['contents'][$cid] = self::get_content_settings($content);
-            $core = self::$core;
-            // Get assets for this content
-            $preloaded_dependencies = $core->loadContentDependencies($content['id'], 'preloaded');
-            $files = $core->getDependenciesFiles($preloaded_dependencies);
-            self::alter_assets($files, $preloaded_dependencies, $embed);
-            if ($embed === 'div') {
-                foreach ($files['scripts'] as $script) {
-                    $url = $script->path.$script->version;
-                    if (!in_array($url, $settings['loadedJs'])) {
-                        $settings['loadedJs'][] = self::get_h5plibrary_url($url);
+        try {
+            $embed = H5PCore::determineEmbedType($content['embedType'], $content['library']['embedTypes']);
+            // Make sure content isn't added twice
+            $cid = 'cid-' . $content['id'];
+            if (!isset($settings['contents'][$cid])) {
+                $settings['contents'][$cid] = self::get_content_settings($content);
+                $core = self::$core;
+                // Get assets for this content
+                $preloaded_dependencies = $core->loadContentDependencies($content['id'], 'preloaded');
+                $files = $core->getDependenciesFiles($preloaded_dependencies);
+                self::alter_assets($files, $preloaded_dependencies, $embed);
+                if ($embed === 'div') {
+                    foreach ($files['scripts'] as $script) {
+                        $url = $script->path . $script->version;
+                        if (!in_array($url, $settings['loadedJs'])) {
+                            $settings['loadedJs'][] = self::get_h5plibrary_url($url);
+                        }
                     }
-                }
-                foreach ($files['styles'] as $style) {
-                    $url = $style->path.$style->version;
-                    if (!in_array($url, $settings['loadedCss'])) {
-                        $settings['loadedCss'][] = self::get_h5plibrary_url($url);
+                    foreach ($files['styles'] as $style) {
+                        $url = $style->path . $style->version;
+                        if (!in_array($url, $settings['loadedCss'])) {
+                            $settings['loadedCss'][] = self::get_h5plibrary_url($url);
+                        }
                     }
+                } elseif ($embed === 'iframe') {
+                    $settings['contents'][$cid]['scripts'] = $core->getAssetsUrls($files['scripts']);
+                    $settings['contents'][$cid]['styles'] = $core->getAssetsUrls($files['styles']);
                 }
-            } elseif ($embed === 'iframe') {
-                $settings['contents'][$cid]['scripts'] = $core->getAssetsUrls($files['scripts']);
-                $settings['contents'][$cid]['styles'] = $core->getAssetsUrls($files['styles']);
             }
-        }
 
-        if ($embed === 'div') {
+            if ($embed === 'div') {
+                return [
+                    'settings' => $settings,
+                    'embed' => '<div class="h5p-content" data-content-id="' . $content['id'] . '"></div>',
+                ];
+            } else {
+                return [
+                    'settings' => $settings,
+                    'embed' => '<div class="h5p-iframe-wrapper"><iframe id="h5p-iframe-' . $content['id'] . '" class="h5p-iframe" data-content-id="' . $content['id'] . '" style="height:1px" src="about:blank" frameBorder="0" scrolling="no"></iframe></div>',
+                ];
+            }
+        }catch (\Exception $e){
             return [
                 'settings' => $settings,
-                'embed'    => '<div class="h5p-content" data-content-id="'.$content['id'].'"></div>',
-            ];
-        } else {
-            return [
-                'settings' => $settings,
-                'embed'    => '<div class="h5p-iframe-wrapper"><iframe id="h5p-iframe-'.$content['id'].'" class="h5p-iframe" data-content-id="'.$content['id'].'" style="height:1px" src="about:blank" frameBorder="0" scrolling="no"></iframe></div>',
+                'embed' => '<div class="h5p-iframe-wrapper"><p>H5P content is not exits</p></div>',
             ];
         }
     }

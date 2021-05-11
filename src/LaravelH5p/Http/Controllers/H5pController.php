@@ -311,20 +311,24 @@ class H5pController extends Controller
 
     public function show(Request $request, $id)
     {
-        $h5p = App::make('LaravelH5p');
-        $core = $h5p::$core;
-        $settings = $h5p::get_editor();
-        $content = $h5p->get_content($id);
-        $embed = $h5p->get_embed($content, $settings);
-        $embed_code = $embed['embed'];
-        $settings = $embed['settings'];
-        $user = Auth::user();
+        try {
+            $h5p = App::make('LaravelH5p');
+            $core = $h5p::$core;
+            $settings = $h5p::get_editor();
+            $content = $h5p->get_content($id);
+            $embed = $h5p->get_embed($content, $settings);
+            $embed_code = $embed['embed'];
+            $settings = $embed['settings'];
+            $user = Auth::user();
 
-        // create event dispatch
-        event(new H5pEvent('content', null, $content['id'], $content['title'], $content['library']['name'], $content['library']['majorVersion'], $content['library']['minorVersion']));
+            // create event dispatch
+            event(new H5pEvent('content', null, $content['id'], $content['title'], $content['library']['name'], $content['library']['majorVersion'], $content['library']['minorVersion']));
 
-        //     return view('h5p.content.edit', compact("settings", 'user', 'id', 'content', 'library', 'parameters', 'display_options'));
-        return view('h5p.content.show', compact('settings', 'user', 'embed_code'));
+            //     return view('h5p.content.edit', compact("settings", 'user', 'id', 'content', 'library', 'parameters', 'display_options'));
+            return view('h5p.content.show', compact('settings', 'user', 'embed_code'));
+        }catch (\Exception $e){
+            return 'H5P content is not exits';
+        }
     }
 
     public function destroy(Request $request, $id)
