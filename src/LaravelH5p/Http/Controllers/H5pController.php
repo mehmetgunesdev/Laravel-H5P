@@ -45,7 +45,7 @@ class H5pController extends Controller
             'creator' => trans('laravel-h5p.content.creator'),
         ];
         $entrys = $where->paginate(10);
-        $entrys->appends(['sf' => $request->query('sf'), 's' => $request->query('s')]);
+        $entrys->appends(['sf' => $request->query('sf'), 's' => $request->query('s'), 'course' => $request->query('course')]);
 
         // view Get the file and settings to print from
         $settings = $h5p::get_editor();
