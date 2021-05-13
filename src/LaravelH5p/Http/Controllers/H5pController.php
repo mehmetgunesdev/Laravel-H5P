@@ -23,7 +23,7 @@ class H5pController extends Controller
         }
 
         $h5p = App::make('LaravelH5p');
-        $where = H5pContent::orderBy('h5p_contents.id', 'desc');
+        $where = H5pContent::orderBy('h5p_contents.created_at', 'asc');
 
         if ($request->query('sf') && $request->query('s')) {
             if ($request->query('sf') == 'title') {
