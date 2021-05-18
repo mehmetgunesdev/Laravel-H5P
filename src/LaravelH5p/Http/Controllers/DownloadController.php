@@ -34,10 +34,11 @@ class DownloadController extends Controller
         if($id) {
             $course = $id;
         }
-        $archive_file_name = 'export_h5p.zip';
+        $filePath = storage_path('h5p/exports/');
+        $archive_file_name = 'export_h5p2.zip';
         $zip = new \ZipArchive();
         //create the file and throw the error if unsuccessful
-        if ($zip->open($archive_file_name, \ZipArchive::CREATE )!==TRUE) {
+        if ($zip->open($filePath.$archive_file_name, \ZipArchive::CREATE )!==TRUE) {
             exit("cannot open <$archive_file_name>\n");
         }
 
@@ -63,10 +64,10 @@ class DownloadController extends Controller
         header("Content-type: application/octet-stream");
         header("Content-Disposition: attachment; filename=\"".$archive_file_name."\"");
         header("Content-Transfer-Encoding: binary");
-        header("Content-Length: ".filesize($archive_file_name));
+        header("Content-Length: ".filesize($filePath.$archive_file_name));
         ob_clean();
         flush();
-        readfile($archive_file_name);
-        unlink($archive_file_name);
+        readfile($filePath.$archive_file_name);
+        unlink($filePath.$archive_file_name);
     }
 }
