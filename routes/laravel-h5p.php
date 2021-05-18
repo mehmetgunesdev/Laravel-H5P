@@ -49,5 +49,6 @@ Route::group(['middleware' => ['web']], function () {
     //    if (config('laravel-h5p.use_router') == 'EXPORT' || config('laravel-h5p.use_router') == 'ALL') {
     Route::get('h5p/embed/{id}', 'InHub\LaravelH5p\Http\Controllers\EmbedController')->name('h5p.embed');
     Route::get('h5p/export/{id}', 'InHub\LaravelH5p\Http\Controllers\DownloadController')->name('h5p.export');
+    Route::get('h5p/export-all/{id}', 'InHub\LaravelH5p\Http\Controllers\DownloadController@exportAll')->name('h5p.export-all');
 //    }
 });
