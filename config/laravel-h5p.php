@@ -30,7 +30,7 @@ return [
     'h5p_embed'                  => true,
     'h5p_copyright'              => false,
     'h5p_icon'                   => true,
-    'h5p_track_user'             => false,
+    'h5p_track_user'             => true,
     'h5p_ext_communication'      => true,
     'h5p_save_content_state'     => false,
     'h5p_save_content_frequency' => 30,

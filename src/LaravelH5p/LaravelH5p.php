@@ -229,7 +229,7 @@ class LaravelH5p
         $settings = [
             'baseUrl'            => config('laravel-h5p.domain'),
             'url'                => self::get_h5p_storage(), // for uploaded
-            'postUserStatistics' => (config('laravel-h5p.h5p_track_user', true) === true) && Auth::check(),
+            'postUserStatistics' => (config('laravel-h5p.h5p_track_user', true) === true),
             'ajax'               => [
                 'setFinished'     => route('h5p.ajax.finish'),
                 'contentUserData' => route('h5p.ajax.content-user-data'),
