@@ -13,21 +13,23 @@ class EmbedController extends Controller
     public function __invoke(Request $request, $id)
     {
         try {
-
-            $count_user = User::where('email', $request->email)->count();
-            $email = $request->email;
+            $email = $request->email ? $request->email:'';
             $pass = 'passh5p';
-            if($count_user == 0){
-                $data['email'] = $request->email;
-                $data['password'] = bcrypt('passh5p');
-                $data['name'] = $request->user_name ? $request->user_name : explode('@',$data['email'])[0];
-                User::query()->create($data);
-            }
-            if(auth()->check()){
-//                dd(auth()->user());
-            }else{
-                $credentials = ['email'=> $email, 'password'=> $pass];
-                $login = auth()->attempt($credentials, true);
+            $name = $request->user_name ? $request->user_name : '';
+            $count_user = User::where('email', $email)->count();
+            if(!empty($email)) {
+                if ($count_user == 0) {
+                    $data['email'] = $email;
+                    $data['password'] = bcrypt('passh5p');
+                    $data['name'] = $name;
+                    User::query()->create($data);
+                }
+                if (auth()->check()) {
+                    dd(auth()->user());
+                } else {
+                    $credentials = ['email' => $email, 'password' => $pass];
+                    $login = auth()->attempt($credentials, true);
+                }
             }
 
             $h5p = App::make('LaravelH5p');
