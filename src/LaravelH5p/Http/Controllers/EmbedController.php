@@ -25,7 +25,7 @@ class EmbedController extends Controller
                     User::query()->create($data);
                 }
                 if (auth()->check()) {
-                    dd(auth()->user());
+//                    dd(auth()->user());
                 } else {
                     $credentials = ['email' => $email, 'password' => $pass];
                     $login = auth()->attempt($credentials, true);
