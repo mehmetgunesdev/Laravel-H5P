@@ -2,31 +2,34 @@
 
 namespace InHub\LaravelH5p;
 
+use Illuminate\Routing\Router;
+use Illuminate\Support\ServiceProvider;
 use InHub\LaravelH5p\Commands\MigrationCommand;
 use InHub\LaravelH5p\Commands\ResetCommand;
 use InHub\LaravelH5p\Helpers\H5pHelper;
 
-class LaravelH5pServiceProvider extends \Illuminate\Support\ServiceProvider
+class LaravelH5pServiceProvider extends ServiceProvider
 {
-    protected $defer = false;
+    protected bool $defer = false;
 
     /**
      * The event listener mappings for the application.
      *
      * @var array
      */
-    protected $listen = [
+    protected array $listen = [
         'InHub\LaravelH5p\Events\H5pEvent' => [
             'InHub\LaravelH5p\Listeners\H5pNotification',
         ],
     ];
 
-    public function register()
+    /**
+     * @return void
+     */
+    public function register(): void
     {
         $this->app->singleton('LaravelH5p', function ($app) {
-            $LaravelH5p = new LaravelH5p($app);
-
-            return $LaravelH5p;
+            return new LaravelH5p($app);
         });
 
         $this->app->bind('H5pHelper', function () {
@@ -50,9 +53,10 @@ class LaravelH5pServiceProvider extends \Illuminate\Support\ServiceProvider
     /**
      * Bootstrap the application services.
      *
+     * @param Router $router
      * @return void
      */
-    public function boot(\Illuminate\Routing\Router $router)
+    public function boot(Router $router): void
     {
         $this->loadRoutesFrom(__DIR__.'/../../routes/laravel-h5p.php');
 
@@ -104,7 +108,7 @@ class LaravelH5pServiceProvider extends \Illuminate\Support\ServiceProvider
         ], 'public');
     }
 
-    public function provides()
+    public function provides(): array
     {
         return [
             'command.laravel-h5p.migration',

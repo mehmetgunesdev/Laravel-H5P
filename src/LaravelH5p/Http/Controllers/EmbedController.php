@@ -2,22 +2,27 @@
 
 namespace InHub\LaravelH5p\Http\Controllers;
 
-use App\Http\Controllers\Controller;
-use App\User;
+use App\Models\User;
+use Illuminate\Support\Facades\Auth;
+use Exception;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
+use Illuminate\Routing\Controller;
 use InHub\LaravelH5p\Events\H5pEvent;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 
 class EmbedController extends Controller
 {
-    public function __invoke(Request $request, $id)
+    public function __invoke(Request $request, $id): View|Factory|string|Application
     {
         try {
-            $email = $request->email ? $request->email:'';
+            $email = $request->email ? $request->email : '';
             $pass = 'passh5p';
             $name = $request->user_name ? $request->user_name : '';
             $count_user = User::where('email', $email)->count();
-            if(!empty($email)) {
+            if (!empty($email)) {
                 if ($count_user == 0) {
                     $data['email'] = $email;
                     $data['password'] = bcrypt('passh5p');
@@ -39,12 +44,12 @@ class EmbedController extends Controller
             $embed = $h5p->get_embed($content, $settings);
             $embed_code = $embed['embed'];
             $settings = $embed['settings'];
-            $user = \Auth::user();
+            $user = Auth::user();
 
             event(new H5pEvent('content', null, $content['id'], $content['title'], $content['library']['name'], $content['library']['majorVersion'], $content['library']['minorVersion']));
 
             return view('h5p.content.embed', compact('settings', 'user', 'embed_code'));
-        }catch (\Exception $e){
+        } catch (Exception $e) {
             return 'H5P content is not exits';
         }
     }

@@ -2,15 +2,17 @@
 
 namespace InHub\LaravelH5p\Http\Controllers;
 
-use App\Http\Controllers\Controller;
+use Illuminate\Routing\Controller;
 use InHub\LaravelH5p\Eloquents\H5pContent;
 use InHub\LaravelH5p\Events\H5pEvent;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use ZipArchive;
 
 class DownloadController extends Controller
 {
-    public function __invoke(Request $request, $id)
+    public function __invoke(Request $request, $id): BinaryFileResponse
     {
         $h5p = App::make('LaravelH5p');
         $core = $h5p::$core;
@@ -22,28 +24,29 @@ class DownloadController extends Controller
 
         return response()
             ->download($interface->_download_file, '', [
-                'Content-Type'  => 'application/zip',
+                'Content-Type' => 'application/zip',
                 'Cache-Control' => 'no-store, no-cache, must-revalidate, post-check=0, pre-check=0',
             ]);
 
         event(new H5pEvent('download', null, $content['id'], $content['title'], $content['library']['name'], $content['library']['majorVersion'], $content['library']['minorVersion']));
     }
 
-    public function exportAll(Request $request, $id){
+    public function exportAll(Request $request, $id)
+    {
         $course = null;
-        if($id) {
+        if ($id) {
             $course = $id;
         }
         $filePath = storage_path('h5p/exports/');
         $archive_file_name = 'export_h5p2.zip';
-        $zip = new \ZipArchive();
+        $zip = new ZipArchive();
         //create the file and throw the error if unsuccessful
-        if ($zip->open($filePath.$archive_file_name, \ZipArchive::CREATE )!==TRUE) {
+        if ($zip->open($filePath . $archive_file_name, ZipArchive::CREATE) !== TRUE) {
             exit("cannot open <$archive_file_name>\n");
         }
 
         $listH5p = H5pContent::select('id')->where('h5p_contents.course_id', $course)->get();
-        foreach ($listH5p as $value){
+        foreach ($listH5p as $value) {
             $h5p = App::make('LaravelH5p');
             $core = $h5p::$core;
             $interface = $h5p::$interface;
@@ -52,7 +55,7 @@ class DownloadController extends Controller
             $content['filtered'] = '';
             $params = $core->filterParameters($content);
             $filename = $interface->_download_file;
-            $zip->addFile($filename,'h5p/h5p'.$value->id.'.h5p');
+            $zip->addFile($filename, 'h5p/h5p' . $value->id . '.h5p');
         }
         $zip->close();
         //then send the headers to force download the zip file
@@ -62,12 +65,12 @@ class DownloadController extends Controller
         header("Cache-Control: public");
         header("Content-Description: File Transfer");
         header("Content-type: application/octet-stream");
-        header("Content-Disposition: attachment; filename=\"".$archive_file_name."\"");
+        header("Content-Disposition: attachment; filename=\"" . $archive_file_name . "\"");
         header("Content-Transfer-Encoding: binary");
-        header("Content-Length: ".filesize($filePath.$archive_file_name));
+        header("Content-Length: " . filesize($filePath . $archive_file_name));
         ob_clean();
         flush();
-        readfile($filePath.$archive_file_name);
-        unlink($filePath.$archive_file_name);
+        readfile($filePath . $archive_file_name);
+        unlink($filePath . $archive_file_name);
     }
 }

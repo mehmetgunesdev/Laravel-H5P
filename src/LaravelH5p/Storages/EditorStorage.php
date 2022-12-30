@@ -12,8 +12,8 @@
 
 namespace InHub\LaravelH5p\Storages;
 
-use App;
-use DB;
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\DB;
 use InHub\LaravelH5p\Eloquents\H5pLibrary;
 use InHub\LaravelH5p\Eloquents\H5pTmpfile;
 use H5peditorStorage;
@@ -31,12 +31,12 @@ class EditorStorage implements H5peditorStorage
         $h5p->alter_assets($files, $libraries, 'editor');
     }
 
-    public function getAvailableLanguages($machineName, $majorVersion, $minorVersion)
+    public function getAvailableLanguages($machineName, $majorVersion, $minorVersion): array
     {
         return [];
     }
 
-    public function getLanguage($machineName, $majorVersion, $minorVersion, $language)
+    public function getLanguage($machineName, $majorVersion, $minorVersion, $language): ?string
     {
 //        $language = 'ja';
         // Load translation field from DB
@@ -51,7 +51,7 @@ class EditorStorage implements H5peditorStorage
         return $return ? $return[0]->translation : null;
     }
 
-    public function getLibraries($libraries = null)
+    public function getLibraries($libraries = null): array
     {
         $return = [];
 
@@ -169,7 +169,7 @@ class EditorStorage implements H5peditorStorage
         }
     }
 
-    public static function saveFileTemporarily($data, $move_file)
+    public static function saveFileTemporarily($data, $move_file): object
     {
         $h5p = App::make('LaravelH5p');
         $path = $h5p::$interface->getUploadedH5pPath();

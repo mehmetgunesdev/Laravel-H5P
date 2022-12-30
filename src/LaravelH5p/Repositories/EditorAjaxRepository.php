@@ -12,7 +12,7 @@
 
 namespace InHub\LaravelH5p\Repositories;
 
-use DB;
+use Illuminate\Support\Facades\DB;
 use InHub\LaravelH5p\Eloquents\H5pLibrariesHubCache;
 use InHub\LaravelH5p\Eloquents\H5pLibrary;
 use H5PEditorAjaxInterface;
@@ -43,7 +43,7 @@ class EditorAjaxRepository implements H5PEditorAjaxInterface
         return $recently_used;
       }
     */
-    public function getAuthorsRecentlyUsedLibraries()
+    public function getAuthorsRecentlyUsedLibraries(): array
     {
         // Get latest version of local libraries
         $major_versions_sql = 'SELECT hl.name,
@@ -75,7 +75,7 @@ class EditorAjaxRepository implements H5PEditorAjaxInterface
         return collect($select)->pluck('machine_name');
     }
 
-    public function getContentTypeCache($machineName = null)
+    public function getContentTypeCache($machineName = null): object|array|null
     {
         $where = H5pLibrariesHubCache::select();
         if ($machineName) {
@@ -85,7 +85,7 @@ class EditorAjaxRepository implements H5PEditorAjaxInterface
         }
     }
 
-    public function getLatestLibraryVersions()
+    public function getLatestLibraryVersions(): array
     {
         $recentlyUsed = H5PLibrary::where('semantics', '!=', '')
             ->get();
@@ -97,7 +97,7 @@ class EditorAjaxRepository implements H5PEditorAjaxInterface
         return $recentlyUsed;
     }
 
-    public function validateEditorToken($token)
+    public function validateEditorToken($token): bool
     {
         // return (Helpers::nonce($token) == 'h5p_editor_ajax');
         return true;

@@ -15,7 +15,10 @@ namespace InHub\LaravelH5p\Exceptions;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Throwable;
 
 class H5PExceptionHandler extends ExceptionHandler
 {
@@ -33,57 +36,41 @@ class H5PExceptionHandler extends ExceptionHandler
      *
      * This is a great spot to send exceptions to Sentry, Bugsnag, etc.
      *
-     * @param \Exception $e
+     * @param Exception|Throwable $e
      *
-     * @return void
+     * @throws Throwable
      */
-    public function report(Exception $e)
+    public function report(Exception|Throwable $e)
     {
-        return parent::report($e);
+        parent::report($e);
     }
 
     /**
      * Render an exception into an HTTP response.
      *
-     * @param \Illuminate\Http\Request $request
-     * @param  $e
+     * @param Request $request
+     * @param Exception|Throwable $e
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
+     * @throws Throwable
      */
-    public function render($request, Exception $e)
+    public function render($request, Exception|Throwable $e): Response
     {
         switch ($e) {
-
-        case $e instanceof ModelNotFoundException:
-
-            return $this->renderException($e);
-            break;
-
-        case $e instanceof H5PException:
-
-            return $this->renderException($e);
-            break;
-
-        default:
-
-            return parent::render($request, $e);
+            case $e instanceof H5PException:
+            case $e instanceof ModelNotFoundException:
+                return $this->renderException($e);
+            default:
+                return parent::render($request, $e);
         }
     }
 
-    protected function renderException($e)
+    protected function renderException($e): Response|bool|string
     {
-        switch ($e) {
-
-        case $e instanceof ModelNotFoundException:
-            return response()->view('errors.404', [], 404);
-            break;
-
-        case $e instanceof H5PException:
-            return response()->view('errors.friendly');
-            break;
-        default:
-            return (new SymfonyDisplayer(config('app.debug')))
-                ->createResponse($e);
-        }
+        return match ($e) {
+            $e instanceof ModelNotFoundException => response()->view('errors.404', [], 404),
+            $e instanceof H5PException => response()->view('errors.friendly'),
+            default => json_encode($e),
+        };
     }
 }

@@ -11,7 +11,7 @@ class CreateH5pCountersTable extends Migration
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
         Schema::create('h5p_counters', function (Blueprint $table) {
             $table->string('type', 63);
@@ -27,7 +27,7 @@ class CreateH5pCountersTable extends Migration
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::drop('h5p_counters');
     }

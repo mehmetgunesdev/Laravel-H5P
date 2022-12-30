@@ -2,7 +2,12 @@
 
 namespace InHub\LaravelH5p\Http\Controllers;
 
-use App\Http\Controllers\Controller;
+use Exception;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Routing\Controller;
 use InHub\LaravelH5p\Eloquents\H5pContent;
 use InHub\LaravelH5p\Events\H5pEvent;
 use H5pCore;
@@ -10,16 +15,17 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use InHub\LaravelH5p\Exceptions\H5PException;
-use MongoDB\Driver\Session;
+use function session;
+
 
 class H5pController extends Controller
 {
-    public function index(Request $request)
+    public function index(Request $request): Factory|View|Application
     {
         $course = null;
-        if($request->get('course')) {
+        if ($request->get('course')) {
             $course = $request->get('course');
-            \session()->put('course', $request->get('course'));
+            session()->put('course', $request->get('course'));
         }
 
         $h5p = App::make('LaravelH5p');
@@ -30,18 +36,18 @@ class H5pController extends Controller
                 $where->where('h5p_contents.title', $request->query('s'));
             }
             if ($request->query('sf') == 'creator') {
-                $where->leftJoin('users', 'users.id', 'h5p_contents.user_id')->where('users.name', 'like', '%'.$request->query('s').'%');
+                $where->leftJoin('users', 'users.id', 'h5p_contents.user_id')->where('users.name', 'like', '%' . $request->query('s') . '%');
             }
         }
 
         //Get by course id
-        if($request->get('course') || session()->get('course')) {
+        if ($request->get('course') || session()->get('course')) {
             $course_id = $request->get('course') ? $request->get('course') : session()->get('course');
             $where->where('h5p_contents.course_id', $course_id);
         }
 
         $search_fields = [
-            'title'   => trans('laravel-h5p.content.title'),
+            'title' => trans('laravel-h5p.content.title'),
             'creator' => trans('laravel-h5p.content.creator'),
         ];
         $entrys = $where->paginate(10);
@@ -50,16 +56,16 @@ class H5pController extends Controller
         // view Get the file and settings to print from
         $settings = $h5p::get_editor();
 
-        return view('h5p.content.index', compact('entrys', 'request', 'search_fields', 'settings','course'));
+        return view('h5p.content.index', compact('entrys', 'request', 'search_fields', 'settings', 'course'));
     }
 
-    public function create(Request $request)
+    public function create(Request $request): Factory|View|Application
     {
         $h5p = App::make('LaravelH5p');
         $core = $h5p::$core;
 
         $course = null;
-        if($request->get('course')) {
+        if ($request->get('course')) {
             $course = $request->get('course');
         }
 
@@ -77,17 +83,17 @@ class H5pController extends Controller
 
         $user = Auth::user();
 
-        return view('h5p.content.create', compact('settings', 'user', 'library', 'parameters', 'display_options','course'));
+        return view('h5p.content.create', compact('settings', 'user', 'library', 'parameters', 'display_options', 'course'));
     }
 
-    public function store(Request $request)
+    public function store(Request $request): RedirectResponse
     {
         $h5p = App::make('LaravelH5p');
         $core = $h5p::$core;
         $editor = $h5p::$h5peditor;
 
         $course = null;
-        if($request->get('course')) {
+        if ($request->get('course')) {
             $course = $request->get('course');
         }
 
@@ -101,11 +107,11 @@ class H5pController extends Controller
         $oldParams = null;
         $event_type = 'create';
         $content = [
-            'disable'    => H5PCore::DISABLE_NONE,
-            'user_id'    => Auth::id(),
+            'disable' => H5PCore::DISABLE_NONE,
+            'user_id' => Auth::id(),
             'embed_type' => 'div',
-            'filtered'   => '',
-            'slug'       => config('laravel-h5p.slug'),
+            'filtered' => '',
+            'slug' => config('laravel-h5p.slug'),
         ];
 
         $content['filtered'] = '';
@@ -175,14 +181,14 @@ class H5pController extends Controller
         }
     }
 
-    public function edit(Request $request, $id)
+    public function edit(Request $request, $id): Factory|View|Application
     {
         $h5p = App::make('LaravelH5p');
         $core = $h5p::$core;
         $editor = $h5p::$h5peditor;
 
         $course = null;
-        if($request->get('course')) {
+        if ($request->get('course')) {
             $course = $request->get('course');
         }
 
@@ -208,21 +214,21 @@ class H5pController extends Controller
         $settings = $h5p::get_editor($content);
 
         // create event dispatch
-        event(new H5pEvent('content', 'edit', $content['id'], $content['title'], $content['library']['name'], $content['library']['majorVersion'].'.'.$content['library']['minorVersion']));
+        event(new H5pEvent('content', 'edit', $content['id'], $content['title'], $content['library']['name'], $content['library']['majorVersion'] . '.' . $content['library']['minorVersion']));
 
         $user = Auth::user();
 
-        return view('h5p.content.edit', compact('settings', 'user', 'id', 'content', 'library', 'parameters', 'display_options','course'));
+        return view('h5p.content.edit', compact('settings', 'user', 'id', 'content', 'library', 'parameters', 'display_options', 'course'));
     }
 
-    public function update(Request $request, $id)
+    public function update(Request $request, $id): RedirectResponse
     {
         $h5p = App::make('LaravelH5p');
         $core = $h5p::$core;
         $editor = $h5p::$h5peditor;
 
         $course = null;
-        if($request->get('course')) {
+        if ($request->get('course')) {
             $course = $request->get('course');
         }
 
@@ -309,7 +315,7 @@ class H5pController extends Controller
         }
     }
 
-    public function show(Request $request, $id)
+    public function show(Request $request, $id): View|Factory|string|Application
     {
         try {
             $h5p = App::make('LaravelH5p');
@@ -326,7 +332,7 @@ class H5pController extends Controller
 
             //     return view('h5p.content.edit', compact("settings", 'user', 'id', 'content', 'library', 'parameters', 'display_options'));
             return view('h5p.content.show', compact('settings', 'user', 'embed_code'));
-        }catch (\Exception $e){
+        } catch (Exception $e) {
             return 'H5P content is not exits';
         }
     }
@@ -344,9 +350,9 @@ class H5pController extends Controller
     private function get_disabled_content_features($core, &$content)
     {
         $set = [
-            H5PCore::DISPLAY_OPTION_FRAME     => filter_input(INPUT_POST, 'frame', FILTER_VALIDATE_BOOLEAN),
-            H5PCore::DISPLAY_OPTION_DOWNLOAD  => filter_input(INPUT_POST, 'download', FILTER_VALIDATE_BOOLEAN),
-            H5PCore::DISPLAY_OPTION_EMBED     => filter_input(INPUT_POST, 'embed', FILTER_VALIDATE_BOOLEAN),
+            H5PCore::DISPLAY_OPTION_FRAME => filter_input(INPUT_POST, 'frame', FILTER_VALIDATE_BOOLEAN),
+            H5PCore::DISPLAY_OPTION_DOWNLOAD => filter_input(INPUT_POST, 'download', FILTER_VALIDATE_BOOLEAN),
+            H5PCore::DISPLAY_OPTION_EMBED => filter_input(INPUT_POST, 'embed', FILTER_VALIDATE_BOOLEAN),
             H5PCore::DISPLAY_OPTION_COPYRIGHT => filter_input(INPUT_POST, 'copyright', FILTER_VALIDATE_BOOLEAN),
         ];
         $content['disable'] = $core->getStorableDisplayOptions($set, $content['disable']);

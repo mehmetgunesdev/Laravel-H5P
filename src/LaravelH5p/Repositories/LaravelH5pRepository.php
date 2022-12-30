@@ -13,7 +13,10 @@
 namespace InHub\LaravelH5p\Repositories;
 
 use Carbon\Carbon;
-use DB;
+use DateTime;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\Routing\UrlGenerator;
+use Illuminate\Support\Facades\DB;
 use InHub\LaravelH5p\Eloquents\H5pContent;
 use InHub\LaravelH5p\Eloquents\H5pContentsLibrary;
 use InHub\LaravelH5p\Eloquents\H5pContentsUserData;
@@ -26,6 +29,7 @@ use GuzzleHttp\Client;
 use H5PFrameworkInterface;
 use H5PPermission;
 use Illuminate\Support\Facades\App;
+use function GuzzleHttp\Psr7\stream_for;
 
 class LaravelH5pRepository implements H5PFrameworkInterface
 {
@@ -38,13 +42,13 @@ class LaravelH5pRepository implements H5PFrameworkInterface
      *
      * @var array
      */
-    protected $messages = ['error' => [], 'updated' => []];
+    protected array $messages = ['error' => [], 'updated' => []];
 
-    private $loadedLibraries = [];
-    private $allLibraries = [];
-    private $allDependencies = [];
+    private array $loadedLibraries = [];
+    private array $allLibraries = [];
+    private array $allDependencies = [];
 
-    public function loadAddons()
+    public function loadAddons(): array
     {
         return [];
     }
@@ -80,21 +84,20 @@ class LaravelH5pRepository implements H5PFrameworkInterface
     /**
      * Return the selected messages.
      *
-     * @since 1.0.0
-     *
      * @param string $type
      *
-     * @return array
+     * @return array|null
+     * @since 1.0.0
      */
-    public function getMessages($type)
+    public function getMessages($type): ?array
     {
-        return isset($this->messages[$type]) ? $this->messages[$type] : null;
+        return $this->messages[$type] ?? null;
     }
 
     /**
      * Implements t.
      */
-    public function t($message, $replacements = [])
+    public function t($message, $replacements = []): string
     {
         // Insert !var as is, escape @var and emphasis %var.
         foreach ($replacements as $key => $replacement) {
@@ -103,7 +106,7 @@ class LaravelH5pRepository implements H5PFrameworkInterface
                 $replacements[$key] = $replacement;
             } elseif ($key[0] === '%') {
 //                $replacements[$key] = '<em>' . esc_html($replacement) . '</em>';
-                $replacements[$key] = '<em>'.$replacement.'</em>';
+                $replacements[$key] = '<em>' . $replacement . '</em>';
             }
         }
         $message = preg_replace('/(!|@|%)[a-z0-9]+/i', '%s', $message);
@@ -115,7 +118,7 @@ class LaravelH5pRepository implements H5PFrameworkInterface
     /**
      * Helper.
      */
-    private function getH5pPath()
+    private function getH5pPath(): string|UrlGenerator|Application
     {
         return url('vendor/h5p/h5p-core/');
     }
@@ -123,14 +126,14 @@ class LaravelH5pRepository implements H5PFrameworkInterface
     /**
      * Get the URL to a library file.
      */
-    public function getLibraryFileUrl($libraryFolderName, $fileName)
+    public function getLibraryFileUrl($libraryFolderName, $fileName): string|UrlGenerator|Application
     {
         // Bug fix for library icon
-        if (file_exists(public_path() . '/assets/vendor/h5p/libraries/'.$libraryFolderName.'/'.$fileName) && $fileName == 'icon.svg') {
-            return url('/assets/vendor/h5p/libraries/'.$libraryFolderName.'/'.$fileName);
+        if (file_exists(public_path() . '/assets/vendor/h5p/libraries/' . $libraryFolderName . '/' . $fileName) && $fileName == 'icon.svg') {
+            return url('/assets/vendor/h5p/libraries/' . $libraryFolderName . '/' . $fileName);
         }
 
-        return url('vendor/h5p/h5p-core/'.$libraryFolderName.'/'.$fileName);
+        return url('vendor/h5p/h5p-core/' . $libraryFolderName . '/' . $fileName);
     }
 
     /**
@@ -155,7 +158,7 @@ class LaravelH5pRepository implements H5PFrameworkInterface
         static $path;
         if (is_null($path)) {
             $plugin = App::make('LaravelH5p');
-            $path = $plugin::$core->fs->getTmpPath().'.h5p';
+            $path = $plugin::$core->fs->getTmpPath() . '.h5p';
         }
 
         return $path;
@@ -164,7 +167,7 @@ class LaravelH5pRepository implements H5PFrameworkInterface
     /**
      * Implements getLibraryId.
      */
-    public function getLibraryId($name, $majorVersion = null, $minorVersion = null)
+    public function getLibraryId($name, $majorVersion = null, $minorVersion = null): bool|int
     {
         $where = H5pLibrary::select()->where('name', $name);
 
@@ -186,7 +189,7 @@ class LaravelH5pRepository implements H5PFrameworkInterface
     /**
      * Implements isPatchedLibrary.
      */
-    public function isPatchedLibrary($library)
+    public function isPatchedLibrary($library): bool
     {
         if (defined('H5P_DEV') && H5P_DEV) {
             return true;
@@ -214,7 +217,7 @@ class LaravelH5pRepository implements H5PFrameworkInterface
     /**
      * Implements mayUpdateLibraries.
      */
-    public function mayUpdateLibraries()
+    public function mayUpdateLibraries(): bool
     {
         return H5pHelper::current_user_can('manage_h5p_libraries');
     }
@@ -222,7 +225,7 @@ class LaravelH5pRepository implements H5PFrameworkInterface
     /**
      * Implements getLibraryUsage.
      */
-    public function getLibraryUsage($id, $skipContent = false)
+    public function getLibraryUsage($id, $skipContent = false): array
     {
         if ($skipContent) {
             $content = -1;
@@ -232,7 +235,7 @@ class LaravelH5pRepository implements H5PFrameworkInterface
         }
 
         return [
-            'content'   => $content,
+            'content' => $content,
             'libraries' => intval(H5pLibrariesLibrary::where('required_library_id', $id)->count()),
         ];
     }
@@ -271,40 +274,40 @@ class LaravelH5pRepository implements H5PFrameworkInterface
 
         if ($new) {
             $library['libraryId'] = DB::table('h5p_libraries')->insertGetId([
-                'name'             => $library['machineName'],
-                'title'            => $library['title'],
-                'major_version'    => $library['majorVersion'],
-                'minor_version'    => $library['minorVersion'],
-                'patch_version'    => $library['patchVersion'],
-                'runnable'         => $library['runnable'],
-                'fullscreen'       => $library['fullscreen'],
-                'embed_types'      => $embedTypes,
-                'preloaded_js'     => $preloadedJs,
-                'preloaded_css'    => $preloadedCss,
+                'name' => $library['machineName'],
+                'title' => $library['title'],
+                'major_version' => $library['majorVersion'],
+                'minor_version' => $library['minorVersion'],
+                'patch_version' => $library['patchVersion'],
+                'runnable' => $library['runnable'],
+                'fullscreen' => $library['fullscreen'],
+                'embed_types' => $embedTypes,
+                'preloaded_js' => $preloadedJs,
+                'preloaded_css' => $preloadedCss,
                 'drop_library_css' => $dropLibraryCss,
-                'semantics'        => $library['semantics'],
-                'tutorial_url'     => $library['tutorial_url'],
-                'has_icon'         => $library['hasIcon'] ? 1 : 0,
+                'semantics' => $library['semantics'],
+                'tutorial_url' => $library['tutorial_url'],
+                'has_icon' => $library['hasIcon'] ? 1 : 0,
             ]);
         } else {
             $library['libraryId'] = DB::table('h5p_libraries')
                 ->where('id', $library['libraryId'])->update([
-                    'title'            => $library['title'],
-                    'patch_version'    => $library['patchVersion'],
-                    'runnable'         => $library['runnable'],
-                    'fullscreen'       => $library['fullscreen'],
-                    'embed_types'      => $embedTypes,
-                    'preloaded_js'     => $preloadedJs,
-                    'preloaded_css'    => $preloadedCss,
+                    'title' => $library['title'],
+                    'patch_version' => $library['patchVersion'],
+                    'runnable' => $library['runnable'],
+                    'fullscreen' => $library['fullscreen'],
+                    'embed_types' => $embedTypes,
+                    'preloaded_js' => $preloadedJs,
+                    'preloaded_css' => $preloadedCss,
                     'drop_library_css' => $dropLibraryCss,
-                    'semantics'        => $library['semantics'],
-                    'has_icon'         => $library['hasIcon'] ? 1 : 0,
+                    'semantics' => $library['semantics'],
+                    'has_icon' => $library['hasIcon'] ? 1 : 0,
                 ]);
             $this->deleteLibraryDependencies($library['libraryId']);
         }
 
         // Log library successfully installed/upgraded
-        event(new H5pEvent('library', ($new ? 'create' : 'update'), null, null, $library['machineName'], $library['majorVersion'].'.'.$library['minorVersion']));
+        event(new H5pEvent('library', ($new ? 'create' : 'update'), null, null, $library['machineName'], $library['majorVersion'] . '.' . $library['minorVersion']));
 
         // Update languages
         DB::table('h5p_libraries_languages')
@@ -316,9 +319,9 @@ class LaravelH5pRepository implements H5PFrameworkInterface
 
             foreach ($library['language'] as $languageCode => $translation) {
                 $languages[] = [
-                    'library_id'    => $library['libraryId'],
+                    'library_id' => $library['libraryId'],
                     'language_code' => $languageCode,
-                    'translation'   => $translation,
+                    'translation' => $translation,
                 ];
             }
 
@@ -331,7 +334,7 @@ class LaravelH5pRepository implements H5PFrameworkInterface
     /**
      * Convert list of file paths to csv.
      *
-     * @param array  $library
+     * @param array $library
      *                        Library data as found in library.json files
      * @param string $key
      *                        Key that should be found in $libraryData
@@ -339,7 +342,7 @@ class LaravelH5pRepository implements H5PFrameworkInterface
      * @return string
      *                file paths separated by ', '
      */
-    private function pathsToCsv($library, $key)
+    private function pathsToCsv(array $library, string $key): string
     {
         if (isset($library[$key])) {
             $paths = [];
@@ -369,7 +372,7 @@ class LaravelH5pRepository implements H5PFrameworkInterface
         $plugin = App::make('LaravelH5p');
 
         // Delete library files
-        $plugin::$core->deleteFileTree($this->getH5pPath().'/libraries/'.$library->name.'-'.$library->major_version.'.'.$library->minor_version);
+        $plugin::$core->deleteFileTree($this->getH5pPath() . '/libraries/' . $library->name . '-' . $library->major_version . '.' . $library->minor_version);
 
         // Remove library data from database
         DB::table('h5p_libraries_libraries')->where('library_id', $library->id)->delete();
@@ -432,7 +435,7 @@ class LaravelH5pRepository implements H5PFrameworkInterface
             $event_type .= ' upload';
         }
 
-        event(new H5pEvent('content', $event_type, $content['id'], $content['title'], $entry['library']['machineName'], $entry['library']['majorVersion'].'.'.$entry['library']['minorVersion']));
+        event(new H5pEvent('content', $event_type, $content['id'], $content['title'], $entry['library']['machineName'], $entry['library']['majorVersion'] . '.' . $entry['library']['minorVersion']));
 
         return $content['id'];
     }
@@ -448,12 +451,12 @@ class LaravelH5pRepository implements H5PFrameworkInterface
     /**
      * Implement getWhitelist.
      */
-    public function getWhitelist($isLibrary, $defaultContentWhitelist, $defaultLibraryWhitelist)
+    public function getWhitelist($isLibrary, $defaultContentWhitelist, $defaultLibraryWhitelist): string
     {
         // TODO: Get this value from a settings page.
         $whitelist = $defaultContentWhitelist;
         if ($isLibrary) {
-            $whitelist .= ' '.$defaultLibraryWhitelist;
+            $whitelist .= ' ' . $defaultLibraryWhitelist;
         }
 
         return $whitelist;
@@ -511,11 +514,11 @@ class LaravelH5pRepository implements H5PFrameworkInterface
             $dropCss = in_array($dependency['library']['machineName'], $dropLibraryCssList) ? 1 : 0;
             $libraryIds[] = $dependency['library']['libraryId'];
             $contentLibraries[] = [
-                'content_id'      => strval($contentId),
-                'library_id'      => $dependency['library']['libraryId'],
+                'content_id' => strval($contentId),
+                'library_id' => $dependency['library']['libraryId'],
                 'dependency_type' => $dependency['type'],
-                'drop_css'        => $dropCss,
-                'weight'          => $dependency['weight'],
+                'drop_css' => $dropCss,
+                'weight' => $dependency['weight'],
             ];
         }
 
@@ -533,11 +536,11 @@ class LaravelH5pRepository implements H5PFrameworkInterface
 
             if (!in_array($libraryId, $libraryIds)) {
                 return [
-                    'content_id'      => $contentId,
-                    'library_id'      => $libraryId,
+                    'content_id' => $contentId,
+                    'library_id' => $libraryId,
                     'dependency_type' => $val->dependency_type,
-                    'drop_css'        => 0,
-                    'weight'          => 0,
+                    'drop_css' => 0,
+                    'weight' => 0,
                 ];
             }
 
@@ -548,6 +551,7 @@ class LaravelH5pRepository implements H5PFrameworkInterface
             DB::table('h5p_contents_libraries')->insert($arr);
         }
     }
+
     /**
      * Implements loadLibrary.
      */
@@ -600,8 +604,8 @@ class LaravelH5pRepository implements H5PFrameworkInterface
         }
 
         foreach ($dependencies as $dependency) {
-            $return[$dependency->dependencyType.'Dependencies'][] = [
-                'machineName'  => $dependency->machineName,
+            $return[$dependency->dependencyType . 'Dependencies'][] = [
+                'machineName' => $dependency->machineName,
                 'majorVersion' => $dependency->majorVersion,
                 'minorVersion' => $dependency->minorVersion,
             ];
@@ -617,9 +621,9 @@ class LaravelH5pRepository implements H5PFrameworkInterface
         return $return;
     }
 
-    private function getSemanticsFromFile($name, $majorVersion, $minorVersion)
+    private function getSemanticsFromFile($name, $majorVersion, $minorVersion): bool|string
     {
-        $semanticsPath = $this->getH5pPath().'/libraries/'.$name.'-'.$majorVersion.'.'.$minorVersion.'/semantics.json';
+        $semanticsPath = $this->getH5pPath() . '/libraries/' . $name . '-' . $majorVersion . '.' . $minorVersion . '/semantics.json';
         if (file_exists($semanticsPath)) {
             $semantics = file_get_contents($semanticsPath);
             if (!json_decode($semantics, true)) {
@@ -635,7 +639,7 @@ class LaravelH5pRepository implements H5PFrameworkInterface
     /**
      * Implements loadLibrarySemantics.
      */
-    public function loadLibrarySemantics($name, $majorVersion, $minorVersion)
+    public function loadLibrarySemantics($name, $majorVersion, $minorVersion): ?string
     {
         if ($this->isInDevMode()) {
             $semantics = $this->getSemanticsFromFile($name, $majorVersion, $minorVersion);
@@ -673,7 +677,7 @@ class LaravelH5pRepository implements H5PFrameworkInterface
     /**
      * Implements loadContent.
      */
-    public function loadContent($id)
+    public function loadContent($id): ?array
     {
         $return = DB::select('SELECT
                 hc.id
@@ -694,10 +698,10 @@ class LaravelH5pRepository implements H5PFrameworkInterface
         JOIN h5p_libraries hl ON hl.id = hc.library_id
         WHERE hc.id = ?', [$id]);
 
-        if(empty($return))
+        if (empty($return))
             return null;
 
-        $content = (array) array_shift($return);
+        $content = (array)array_shift($return);
         if ($content !== NULL) {
             $content['metadata'] = array();
             $metadata_structure = array('title');
@@ -705,8 +709,7 @@ class LaravelH5pRepository implements H5PFrameworkInterface
                 if (!empty($content[$property])) {
                     if ($property === 'authors' || $property === 'changes') {
                         $content['metadata'][$property] = json_decode($content[$property]);
-                    }
-                    else {
+                    } else {
                         $content['metadata'][$property] = $content[$property];
                     }
                     if ($property !== 'title') {
@@ -722,7 +725,7 @@ class LaravelH5pRepository implements H5PFrameworkInterface
     /**
      * Implements loadContentDependencies.
      */
-    public function loadContentDependencies($id, $type = null)
+    public function loadContentDependencies($id, $type = null): array
     {
         $query = 'SELECT hl.id
               , hl.name AS machineName
@@ -747,7 +750,7 @@ class LaravelH5pRepository implements H5PFrameworkInterface
         $entrys = DB::select($query, $queryArgs);
         $return = [];
         foreach ($entrys as $entry) {
-            $return[] = (array) $entry;
+            $return[] = (array)$entry;
         }
 
         return $return;
@@ -762,7 +765,7 @@ class LaravelH5pRepository implements H5PFrameworkInterface
             $name = 'h5p_site_uuid'; // Make up for old core bug
         }
 
-        return config('laravel-h5p.h5p_'.$name, $default);
+        return config('laravel-h5p.h5p_' . $name, $default);
     }
 
     /**
@@ -773,7 +776,7 @@ class LaravelH5pRepository implements H5PFrameworkInterface
         if ($name === 'site_uuid') {
             $name = 'h5p_site_uuid'; // Make up for old core bug
         }
-        config(['laravel-h5p.h5p_'.$name => $value]);
+        config(['laravel-h5p.h5p_' . $name => $value]);
     }
 
     /**
@@ -810,7 +813,7 @@ class LaravelH5pRepository implements H5PFrameworkInterface
     /**
      * Implements getNumNotFiltered().
      */
-    public function getNumNotFiltered()
+    public function getNumNotFiltered(): int
     {
         return H5pContent::where('filtered', '')->count();
     }
@@ -818,7 +821,7 @@ class LaravelH5pRepository implements H5PFrameworkInterface
     /**
      * Implements getNumContent().
      */
-    public function getNumContent($library_id, $skip = null)
+    public function getNumContent($library_id, $skip = null): int
     {
         return H5pContent::where('library_id', $library_id)->count();
     }
@@ -827,7 +830,7 @@ class LaravelH5pRepository implements H5PFrameworkInterface
      * Library list to load from library menu
      * Implements loadLibraries.
      */
-    public function loadLibraries()
+    public function loadLibraries(): array
     {
         $results = H5pLibrary::select([
             'id',
@@ -837,7 +840,7 @@ class LaravelH5pRepository implements H5PFrameworkInterface
             'minor_version',
             'patch_version',
             'runnable',
-            'restricted', ])
+            'restricted',])
             ->orderBy('title', 'ASC')
             ->orderBy('major_version', 'ASC')
             ->orderBy('minor_version', 'ASC')
@@ -853,7 +856,7 @@ class LaravelH5pRepository implements H5PFrameworkInterface
     /**
      * Implements getAdminUrl.
      */
-    public function getAdminUrl()
+    public function getAdminUrl(): string
     {
         return route('laravel-h5p.library');
     }
@@ -861,13 +864,13 @@ class LaravelH5pRepository implements H5PFrameworkInterface
     /**
      * Implements getPlatformInfo.
      */
-    public function getPlatformInfo()
+    public function getPlatformInfo(): array
     {
         $laravel = app();
 
         return [
-            'name'       => 'laravel',
-            'version'    => $laravel::VERSION,
+            'name' => 'laravel',
+            'version' => $laravel::VERSION,
             'h5pVersion' => config('laravel-h5p.h5p_version'),
         ];
     }
@@ -879,8 +882,8 @@ class LaravelH5pRepository implements H5PFrameworkInterface
     {
         @set_time_limit(0);
         $options = [
-            'timeout'  => !empty($blocking) ? 30 : 0.01,
-            'stream'   => !empty($stream),
+            'timeout' => !empty($blocking) ? 30 : 0.01,
+            'stream' => !empty($stream),
             'filename' => !empty($stream) ? $stream : false,
         ];
 
@@ -897,7 +900,7 @@ class LaravelH5pRepository implements H5PFrameworkInterface
                     $response = $client->request('GET', $url);
                 } else {
                     $resource = fopen($options['filename'], 'w');
-                    $stream = \GuzzleHttp\Psr7\stream_for($resource);
+                    $stream = stream_for($resource);
 
                     // Use safe when downloading files
                     //                $response = wp_safe_remote_get($url, $options);
@@ -935,14 +938,14 @@ class LaravelH5pRepository implements H5PFrameworkInterface
             ->where('invalidate', 1)
             ->update([
                 'updated_at' => Carbon::now(),
-                'data'       => 'RESET',
+                'data' => 'RESET',
             ]);
     }
 
     /**
      * Implements isContentSlugAvailable.
      */
-    public function isContentSlugAvailable($slug)
+    public function isContentSlugAvailable($slug): bool|array
     {
         return DB::select("SELECT slug FROM h5p_contents WHERE slug = ':slug'", ['slub' => $slug]);
     }
@@ -950,7 +953,7 @@ class LaravelH5pRepository implements H5PFrameworkInterface
     /**
      * Implements getLibraryContentCount.
      */
-    public function getLibraryContentCount()
+    public function getLibraryContentCount(): array
     {
         $count = [];
         // Find number of content per library
@@ -959,7 +962,7 @@ class LaravelH5pRepository implements H5PFrameworkInterface
         WHERE c.library_id = l.id GROUP BY l.name, l.major_version, l.minor_version');
         // Extract results
         foreach ($results as $library) {
-            $count[$library->name.' '.$library->major_version.'.'.$library->minor_version] = $library->count;
+            $count[$library->name . ' ' . $library->major_version . '.' . $library->minor_version] = $library->count;
         }
 
         return $count;
@@ -968,13 +971,13 @@ class LaravelH5pRepository implements H5PFrameworkInterface
     /**
      * Implements getLibraryStats.
      */
-    public function getLibraryStats($type)
+    public function getLibraryStats($type): array
     {
         $count = [];
         $results = DB::select('SELECT library_name AS name, library_version AS version, num FROM h5p_counters WHERE type = ?', [$type]);
         // Extract results
         foreach ($results as $library) {
-            $count[$library->name.' '.$library->version] = $library->num;
+            $count[$library->name . ' ' . $library->version] = $library->num;
         }
 
         return $count;
@@ -983,7 +986,7 @@ class LaravelH5pRepository implements H5PFrameworkInterface
     /**
      * Implements getNumAuthors.
      */
-    public function getNumAuthors()
+    public function getNumAuthors(): array|int
     {
         return DB::select('SELECT COUNT(DISTINCT user_id) FROM h5p_contents');
     }
@@ -1008,7 +1011,7 @@ class LaravelH5pRepository implements H5PFrameworkInterface
             // TODO: Avoid errors if they already exists...
             $cache[] = [
                 'library_id' => isset($library['id']) ? $library['id'] : $library['libraryId'],
-                'hash'       => $key,
+                'hash' => $key,
             ];
         }
 
@@ -1020,7 +1023,7 @@ class LaravelH5pRepository implements H5PFrameworkInterface
     /**
      * Implements deleteCachedAssets.
      */
-    public function deleteCachedAssets($library_id)
+    public function deleteCachedAssets($library_id): array
     {
 
         // Get all the keys so we can remove the files
@@ -1040,7 +1043,7 @@ class LaravelH5pRepository implements H5PFrameworkInterface
      */
     public function afterExportCreated($content, $filename)
     {
-        $this->_download_file = storage_path('h5p/exports/'.$filename);
+        $this->_download_file = storage_path('h5p/exports/' . $filename);
     }
 
     /**
@@ -1067,24 +1070,24 @@ class LaravelH5pRepository implements H5PFrameworkInterface
      * @method hasPermission
      *
      * @param H5PPermission $permission
-     * @param int           $contentUserId
+     * @param int $contentUserId
      *
      * @return bool
      */
-    public function hasPermission($permission, $contentUserId = null)
+    public function hasPermission($permission, $contentUserId = null): bool
     {
         switch ($permission) {
-        case H5PPermission::DOWNLOAD_H5P:
-        case H5PPermission::EMBED_H5P:
+            case H5PPermission::DOWNLOAD_H5P:
+            case H5PPermission::EMBED_H5P:
 //                return self::currentUserCanEdit($contentUserId);
-            return true;
-        case H5PPermission::CREATE_RESTRICTED:
-        case H5PPermission::UPDATE_LIBRARIES:
+                return true;
+            case H5PPermission::CREATE_RESTRICTED:
+            case H5PPermission::UPDATE_LIBRARIES:
 //                return H5pHelper::current_user_can('manage_h5p_libraries');
-            return true;
-        case H5PPermission::INSTALL_RECOMMENDED:
+                return true;
+            case H5PPermission::INSTALL_RECOMMENDED:
 //                H5pHelper::current_user_can('install_recommended_h5p_libraries');
-            return true;
+                return true;
         }
 
         return false;
@@ -1116,8 +1119,8 @@ class LaravelH5pRepository implements H5PFrameworkInterface
                 'summary' => $ct->summary,
                 'description' => $ct->description,
                 'icon' => $ct->icon,
-                'created_at' => (new \DateTime($ct->createdAt))->getTimestamp(),
-                'updated_at' => (new \DateTime($ct->updatedAt))->getTimestamp(),
+                'created_at' => (new DateTime($ct->createdAt))->getTimestamp(),
+                'updated_at' => (new DateTime($ct->updatedAt))->getTimestamp(),
                 'is_recommended' => $ct->isRecommended === true ? 1 : 0,
                 'popularity' => $ct->popularity,
                 'screenshots' => json_encode($ct->screenshots),

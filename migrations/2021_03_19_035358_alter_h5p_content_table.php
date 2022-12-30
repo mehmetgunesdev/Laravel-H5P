@@ -11,7 +11,7 @@ class AlterH5pContentTable extends Migration
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
         Schema::table('h5p_contents', function (Blueprint $table) {
             $table->string('course_id')->nullable();
@@ -23,7 +23,7 @@ class AlterH5pContentTable extends Migration
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::table('h5p_contents', function (Blueprint $table) {
             $table->dropColumn('course_id');

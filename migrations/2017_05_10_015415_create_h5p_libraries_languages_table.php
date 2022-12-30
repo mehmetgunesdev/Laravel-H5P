@@ -11,7 +11,7 @@ class CreateH5pLibrariesLanguagesTable extends Migration
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
         Schema::create('h5p_libraries_languages', function (Blueprint $table) {
             $table->bigInteger('library_id')->unsigned();
@@ -26,7 +26,7 @@ class CreateH5pLibrariesLanguagesTable extends Migration
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::drop('h5p_libraries_languages');
     }

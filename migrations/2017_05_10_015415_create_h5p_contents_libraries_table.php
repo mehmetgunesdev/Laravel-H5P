@@ -11,7 +11,7 @@ class CreateH5pContentsLibrariesTable extends Migration
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
         Schema::create('h5p_contents_libraries', function (Blueprint $table) {
             $table->bigInteger('content_id')->unsigned();
@@ -28,7 +28,7 @@ class CreateH5pContentsLibrariesTable extends Migration
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::drop('h5p_contents_libraries');
     }

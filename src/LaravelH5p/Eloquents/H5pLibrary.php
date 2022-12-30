@@ -28,7 +28,7 @@ class H5pLibrary extends Model
         'updated_at',
     ];
 
-    public function numContent()
+    public function numContent(): int
     {
         $h5p = App::make('LaravelH5p');
         $interface = $h5p::$interface;
@@ -36,20 +36,20 @@ class H5pLibrary extends Model
         return intval($interface->getNumContent($this->id));
     }
 
-    public function getCountContentDependencies()
+    public function getCountContentDependencies(): int
     {
         $h5p = App::make('LaravelH5p');
         $interface = $h5p::$interface;
-        $usage = $interface->getLibraryUsage($this->id, $interface->getNumNotFiltered() ? true : false);
+        $usage = $interface->getLibraryUsage($this->id, (bool)$interface->getNumNotFiltered());
 
         return intval($usage['content']);
     }
 
-    public function getCountLibraryDependencies()
+    public function getCountLibraryDependencies(): int
     {
         $h5p = App::make('LaravelH5p');
         $interface = $h5p::$interface;
-        $usage = $interface->getLibraryUsage($this->id, $interface->getNumNotFiltered() ? true : false);
+        $usage = $interface->getLibraryUsage($this->id, (bool)$interface->getNumNotFiltered());
 
         return intval($usage['libraries']);
     }

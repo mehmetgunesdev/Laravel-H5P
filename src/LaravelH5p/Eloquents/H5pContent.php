@@ -2,11 +2,10 @@
 
 namespace InHub\LaravelH5p\Eloquents;
 
-use App\User;
-use DB;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
-
-//use App\Models\User;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\DB;
 
 class H5pContent extends Model
 {
@@ -36,13 +35,19 @@ class H5pContent extends Model
         'course_id'
     ];
 
-    public function user()
+    /**
+     * @return BelongsTo
+     */
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
-    public function get_user()
+    /**
+     * @return object
+     */
+    public function get_user(): object
     {
-        return (object) DB::table('users')->where('id', $this->user_id)->first();
+        return (object)DB::table('users')->where('id', $this->user_id)->first();
     }
 }

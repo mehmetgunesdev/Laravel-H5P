@@ -21,7 +21,7 @@ class H5pContentsUserData extends Model
         'updated_at',
     ];
 
-    protected function setKeysForSaveQuery(Builder $query)
+    protected function setKeysForSaveQuery($query): Builder
     {
         return $query->where('content_id', $this->getAttribute('content_id'))
             ->where('user_id', $this->getAttribute('user_id'))

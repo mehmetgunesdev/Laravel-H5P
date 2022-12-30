@@ -16,12 +16,12 @@ class H5pHelper
 {
     //put your code here
 
-    public static function current_user_can($permission)
+    public static function current_user_can($permission): bool
     {
         return true;
     }
 
-    public static function nonce($token)
+    public static function nonce($token): string
     {
         return bin2hex($token);
     }

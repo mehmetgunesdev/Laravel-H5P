@@ -2,12 +2,14 @@
 
 namespace InHub\LaravelH5p\Http\Controllers;
 
-use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Routing\Controller;
 use InHub\LaravelH5p\Events\H5pEvent;
 use H5PEditorEndpoints;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
-use Log;
+use Illuminate\Support\Facades\Log;
 use InHub\LaravelH5p\Eloquents\H5pLibrary;
 use InHub\LaravelH5p\Eloquents\H5pResult;
 use InHub\LaravelH5p\Eloquents\H5pContentsUserData;
@@ -25,16 +27,16 @@ class AjaxController extends Controller
         $editor = $h5p::$h5peditor;
 
         //log($machineName);
-        Log::debug('An informational message.'.$machineName.'====='.$h5p->get_language());
+        Log::debug('An informational message.' . $machineName . '=====' . $h5p->get_language());
         if ($machineName) {
             $defaultLanguag = $editor->getLibraryLanguage($machineName, $major_version, $minor_version, $h5p->get_language());
-            Log::debug('An informational message.'.$machineName.'====='.$h5p->get_language().'====='.$defaultLanguag);
+            Log::debug('An informational message.' . $machineName . '=====' . $h5p->get_language() . '=====' . $defaultLanguag);
 
             //   public function getLibraryData($machineName, $majorVersion, $minorVersion, $languageCode, $prefix = '', $fileDir = '', $defaultLanguage) {
 
             $editor->ajax->action(H5PEditorEndpoints::SINGLE_LIBRARY, $machineName, $major_version, $minor_version, $h5p->get_language(), '', $h5p->get_h5plibrary_url('', true), $defaultLanguag);  //$defaultLanguage
             // Log library load
-            event(new H5pEvent('library', null, null, null, $machineName, $major_version.'.'.$minor_version));
+            event(new H5pEvent('library', null, null, null, $machineName, $major_version . '.' . $minor_version));
         } else {
             // Otherwise retrieve all libraries
             $editor->ajax->action(H5PEditorEndpoints::LIBRARIES);
@@ -57,7 +59,7 @@ class AjaxController extends Controller
 
         $installedLibraries = H5pLibrary::all();
 
-        if($response) {
+        if ($response) {
             $response['libraries'] = collect($response['libraries'])->map(function ($lib) use ($installedLibraries) {
                 $lib['installed'] = $installedLibraries->contains('name', $lib['machineName']);
 
@@ -92,7 +94,8 @@ class AjaxController extends Controller
         $editor->ajax->action(H5PEditorEndpoints::LIBRARY_UPLOAD, $request->get('_token'), $filePath, $request->get('contentId'));
     }
 
-    public function ajax_filter(Request $request) {
+    public function ajax_filter(Request $request)
+    {
         $token = filter_input(INPUT_GET, 'token', FILTER_SANITIZE_STRING);
         $libraryParameters = filter_input(INPUT_POST, 'libraryParameters');
         $h5p = App::make('LaravelH5p');
@@ -108,12 +111,12 @@ class AjaxController extends Controller
         $editor->ajax->action(H5PEditorEndpoints::FILES, $request->get('_token'), $request->get('contentId'));
     }
 
-    public function __invoke(Request $request)
+    public function __invoke(Request $request): JsonResponse
     {
         return response()->json($request->all());
     }
 
-    public function finish(Request $request)
+    public function finish(Request $request): JsonResponse
     {
         $input = $request->all();
 
@@ -124,7 +127,7 @@ class AjaxController extends Controller
             'opened' => $input['opened'],
             'finished' => $input['finished'],
             'time' => $input['finished'] - $input['opened'],
-            'user_id' => \Auth::user()->id,
+            'user_id' => Auth::user()->id,
         ];
 
         H5pResult::create($data);
@@ -134,7 +137,7 @@ class AjaxController extends Controller
         ]);
     }
 
-    public function contentUserData(Request $request)
+    public function contentUserData(Request $request): JsonResponse
     {
         $input = $request->all();
 
@@ -144,14 +147,14 @@ class AjaxController extends Controller
             'content_id' => $contentId,
             'data_id' => 'state',
             'sub_content_id' => 0,
-            'user_id' => \Auth::user()->id,
+            'user_id' => Auth::user()->id,
         ])->first();
 
         $data = [
             'content_id' => $contentId,
             'data_id' => 'state',
             'sub_content_id' => 0,
-            'user_id' => \Auth::user()->id,
+            'user_id' => Auth::user()->id,
             'data' => $input['data'],
             'preload' => $input['preload'],
             'invalidate' => $input['invalidate'],

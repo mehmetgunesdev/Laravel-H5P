@@ -1,23 +1,25 @@
 <?php
 
+use Illuminate\Support\Facades\Route;
+
 Route::group(['middleware' => ['web']], function () {
     if (config('laravel-h5p.use_router') == 'EDITOR' || config('laravel-h5p.use_router') == 'ALL') {
         Route::resource('h5p', "InHub\LaravelH5p\Http\Controllers\H5pController");
 //        Route::group(['middleware' => ['auth']], function () {
 //            Route::get('h5p/export', 'InHub\LaravelH5p\Http\Controllers\H5pController@export')->name("h5p.export");
 
-            Route::get('library',
-                "InHub\LaravelH5p\Http\Controllers\LibraryController@index")->name('h5p.library.index');
-            Route::get('library/show/{id}',
-                "InHub\LaravelH5p\Http\Controllers\LibraryController@show")->name('h5p.library.show');
-            Route::post('library/store',
-                "InHub\LaravelH5p\Http\Controllers\LibraryController@store")->name('h5p.library.store');
-            Route::delete('library/destroy',
-                "InHub\LaravelH5p\Http\Controllers\LibraryController@destroy")->name('h5p.library.destroy');
-            Route::get('library/restrict',
-                "InHub\LaravelH5p\Http\Controllers\LibraryController@restrict")->name('h5p.library.restrict');
-            Route::post('library/clear',
-                "InHub\LaravelH5p\Http\Controllers\LibraryController@clear")->name('h5p.library.clear');
+        Route::get('library',
+            "InHub\LaravelH5p\Http\Controllers\LibraryController@index")->name('h5p.library.index');
+        Route::get('library/show/{id}',
+            "InHub\LaravelH5p\Http\Controllers\LibraryController@show")->name('h5p.library.show');
+        Route::post('library/store',
+            "InHub\LaravelH5p\Http\Controllers\LibraryController@store")->name('h5p.library.store');
+        Route::delete('library/destroy',
+            "InHub\LaravelH5p\Http\Controllers\LibraryController@destroy")->name('h5p.library.destroy');
+        Route::get('library/restrict',
+            "InHub\LaravelH5p\Http\Controllers\LibraryController@restrict")->name('h5p.library.restrict');
+        Route::post('library/clear',
+            "InHub\LaravelH5p\Http\Controllers\LibraryController@clear")->name('h5p.library.clear');
 //        });
 
         // ajax

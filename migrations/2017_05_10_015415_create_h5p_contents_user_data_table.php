@@ -11,7 +11,7 @@ class CreateH5pContentsUserDataTable extends Migration
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
         Schema::create('h5p_contents_user_data', function (Blueprint $table) {
             $table->bigInteger('content_id')->unsigned();
@@ -32,7 +32,7 @@ class CreateH5pContentsUserDataTable extends Migration
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::drop('h5p_contents_user_data');
     }
