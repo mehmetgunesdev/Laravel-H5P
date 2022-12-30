@@ -10,7 +10,7 @@
  *
  */
 
-namespace InHub\LaravelH5p\Helpers;
+namespace Alsay\LaravelH5p\Helpers;
 
 class H5pHelper
 {

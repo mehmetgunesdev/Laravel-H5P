@@ -1,12 +1,12 @@
 <?php
 
-namespace InHub\LaravelH5p;
+namespace Alsay\LaravelH5p;
 
 use Illuminate\Routing\Router;
 use Illuminate\Support\ServiceProvider;
-use InHub\LaravelH5p\Commands\MigrationCommand;
-use InHub\LaravelH5p\Commands\ResetCommand;
-use InHub\LaravelH5p\Helpers\H5pHelper;
+use Alsay\LaravelH5p\Commands\MigrationCommand;
+use Alsay\LaravelH5p\Commands\ResetCommand;
+use Alsay\LaravelH5p\Helpers\H5pHelper;
 
 class LaravelH5pServiceProvider extends ServiceProvider
 {
@@ -18,8 +18,8 @@ class LaravelH5pServiceProvider extends ServiceProvider
      * @var array
      */
     protected array $listen = [
-        'InHub\LaravelH5p\Events\H5pEvent' => [
-            'InHub\LaravelH5p\Listeners\H5pNotification',
+        'Alsay\LaravelH5p\Events\H5pEvent' => [
+            'Alsay\LaravelH5p\Listeners\H5pNotification',
         ],
     ];
 

@@ -10,7 +10,7 @@
  *
  */
 
-namespace InHub\LaravelH5p\Storages;
+namespace Alsay\LaravelH5p\Storages;
 
 use Exception;
 use H5PCore;

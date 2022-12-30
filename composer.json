@@ -1,5 +1,5 @@
 {
-  "name": "nguyenkain/laravel-h5p",
+  "name": "alsay/laravel-h5p",
   "description": "H5P Plugin for laravel platform",
   "type": "library",
   "authors": [
@@ -21,7 +21,7 @@
   "prefer-stable": true,
   "autoload": {
     "psr-4": {
-      "InHub\\LaravelH5p\\": "src/LaravelH5p"
+      "Alsay\\LaravelH5p\\": "src/LaravelH5p"
     }
   },
   "require": {
@@ -42,10 +42,10 @@
   "extra": {
     "laravel": {
       "providers": [
-        "InHub\\LaravelH5p\\LaravelH5pServiceProvider"
+        "Alsay\\LaravelH5p\\LaravelH5pServiceProvider"
       ],
       "aliases": {
-        "LaravelH5p": "InHub\\LaravelH5p\\Facades"
+        "LaravelH5p": "Alsay\\LaravelH5p\\Facades"
       }
     }
   }

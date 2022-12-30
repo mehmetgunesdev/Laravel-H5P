@@ -1,6 +1,6 @@
 <?php
 
-namespace InHub\LaravelH5p\Http\Controllers;
+namespace Alsay\LaravelH5p\Http\Controllers;
 
 use Exception;
 use Illuminate\Contracts\Foundation\Application;
@@ -8,13 +8,13 @@ use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Routing\Controller;
-use InHub\LaravelH5p\Eloquents\H5pContent;
-use InHub\LaravelH5p\Events\H5pEvent;
+use Alsay\LaravelH5p\Models\H5pContent;
+use Alsay\LaravelH5p\Events\H5pEvent;
 use H5pCore;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
-use InHub\LaravelH5p\Exceptions\H5PException;
+use Alsay\LaravelH5p\Exceptions\H5PException;
 use function session;
 
 

@@ -7,7 +7,7 @@
 Require it in the Composer.
 
 ```bash
-composer require inhubdev/laravel-h5p
+composer require alsay/laravel-h5p
 ```
 
 Publish the Views, Config and so things.
@@ -40,7 +40,7 @@ Add to Composer-Classmap:
 
 ```php
 'providers' => [
-    InHub\LaravelH5p\LaravelH5pServiceProvider::class,
+    Alsay\LaravelH5p\LaravelH5pServiceProvider::class,
 ];
 ```
 

@@ -10,21 +10,21 @@
  *
  */
 
-namespace InHub\LaravelH5p\Repositories;
+namespace Alsay\LaravelH5p\Repositories;
 
 use Carbon\Carbon;
 use DateTime;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Routing\UrlGenerator;
 use Illuminate\Support\Facades\DB;
-use InHub\LaravelH5p\Eloquents\H5pContent;
-use InHub\LaravelH5p\Eloquents\H5pContentsLibrary;
-use InHub\LaravelH5p\Eloquents\H5pContentsUserData;
-use InHub\LaravelH5p\Eloquents\H5pLibrariesLibrary;
-use InHub\LaravelH5p\Eloquents\H5pLibrary;
-use InHub\LaravelH5p\Eloquents\H5pResult;
-use InHub\LaravelH5p\Events\H5pEvent;
-use InHub\LaravelH5p\Helpers\H5pHelper;
+use Alsay\LaravelH5p\Models\H5pContent;
+use Alsay\LaravelH5p\Models\H5pContentsLibrary;
+use Alsay\LaravelH5p\Models\H5pContentsUserData;
+use Alsay\LaravelH5p\Models\H5pLibrariesLibrary;
+use Alsay\LaravelH5p\Models\H5pLibrary;
+use Alsay\LaravelH5p\Models\H5pResult;
+use Alsay\LaravelH5p\Events\H5pEvent;
+use Alsay\LaravelH5p\Helpers\H5pHelper;
 use GuzzleHttp\Client;
 use H5PFrameworkInterface;
 use H5PPermission;

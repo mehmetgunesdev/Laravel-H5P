@@ -10,7 +10,7 @@
  *
  */
 
-namespace InHub\LaravelH5p\Exceptions;
+namespace Alsay\LaravelH5p\Exceptions;
 
 use Exception;
 

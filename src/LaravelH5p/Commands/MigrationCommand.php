@@ -1,6 +1,6 @@
 <?php
 
-namespace InHub\LaravelH5p\Commands;
+namespace Alsay\LaravelH5p\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Config;

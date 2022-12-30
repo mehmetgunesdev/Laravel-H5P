@@ -1,10 +1,10 @@
 <?php
 
-namespace InHub\LaravelH5p\Http\Controllers;
+namespace Alsay\LaravelH5p\Http\Controllers;
 
 use Illuminate\Routing\Controller;
-use InHub\LaravelH5p\Eloquents\H5pContent;
-use InHub\LaravelH5p\Events\H5pEvent;
+use Alsay\LaravelH5p\Models\H5pContent;
+use Alsay\LaravelH5p\Events\H5pEvent;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;

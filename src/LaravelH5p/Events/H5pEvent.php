@@ -10,9 +10,9 @@
  *
  */
 
-namespace InHub\LaravelH5p\Events;
+namespace Alsay\LaravelH5p\Events;
 
-use InHub\LaravelH5p\Eloquents\H5pEventLog;
+use Alsay\LaravelH5p\Models\H5pEventLog;
 use H5PEventBase;
 use Illuminate\Support\Facades\Auth;
 

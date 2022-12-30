@@ -10,16 +10,16 @@
  *
  */
 
-namespace InHub\LaravelH5p;
+namespace Alsay\LaravelH5p;
 
 use Exception;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Routing\UrlGenerator;
 use Illuminate\Support\Facades\DB;
-use InHub\LaravelH5p\Repositories\EditorAjaxRepository;
-use InHub\LaravelH5p\Repositories\LaravelH5pRepository;
-use InHub\LaravelH5p\Storages\EditorStorage;
-use InHub\LaravelH5p\Storages\LaravelH5pStorage;
+use Alsay\LaravelH5p\Repositories\EditorAjaxRepository;
+use Alsay\LaravelH5p\Repositories\LaravelH5pRepository;
+use Alsay\LaravelH5p\Storages\EditorStorage;
+use Alsay\LaravelH5p\Storages\LaravelH5pStorage;
 use H5PContentValidator;
 use H5PCore;
 use H5peditor;

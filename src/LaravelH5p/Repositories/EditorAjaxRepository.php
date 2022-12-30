@@ -10,11 +10,11 @@
  *
  */
 
-namespace InHub\LaravelH5p\Repositories;
+namespace Alsay\LaravelH5p\Repositories;
 
 use Illuminate\Support\Facades\DB;
-use InHub\LaravelH5p\Eloquents\H5pLibrariesHubCache;
-use InHub\LaravelH5p\Eloquents\H5pLibrary;
+use Alsay\LaravelH5p\Models\H5pLibrariesHubCache;
+use Alsay\LaravelH5p\Models\H5pLibrary;
 use H5PEditorAjaxInterface;
 use Illuminate\Support\Facades\Auth;
 

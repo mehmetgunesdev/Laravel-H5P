@@ -1,6 +1,6 @@
 <?php
 
-namespace InHub\LaravelH5p\Http\Middleware;
+namespace Alsay\LaravelH5p\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;

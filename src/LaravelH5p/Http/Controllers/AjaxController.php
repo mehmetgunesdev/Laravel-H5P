@@ -1,18 +1,18 @@
 <?php
 
-namespace InHub\LaravelH5p\Http\Controllers;
+namespace Alsay\LaravelH5p\Http\Controllers;
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Routing\Controller;
-use InHub\LaravelH5p\Events\H5pEvent;
+use Alsay\LaravelH5p\Events\H5pEvent;
 use H5PEditorEndpoints;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
-use InHub\LaravelH5p\Eloquents\H5pLibrary;
-use InHub\LaravelH5p\Eloquents\H5pResult;
-use InHub\LaravelH5p\Eloquents\H5pContentsUserData;
+use Alsay\LaravelH5p\Models\H5pLibrary;
+use Alsay\LaravelH5p\Models\H5pResult;
+use Alsay\LaravelH5p\Models\H5pContentsUserData;
 
 class AjaxController extends Controller
 {

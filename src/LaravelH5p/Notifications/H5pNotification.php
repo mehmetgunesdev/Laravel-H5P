@@ -1,6 +1,6 @@
 <?php
 
-namespace InHub\LaravelH5p\Notifications;
+namespace Alsay\LaravelH5p\Notifications;
 
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Notification;

@@ -1,6 +1,6 @@
 <?php
 
-namespace InHub\LaravelH5p\Eloquents;
+namespace Alsay\LaravelH5p\Models;
 
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;

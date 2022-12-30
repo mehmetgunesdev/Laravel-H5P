@@ -10,12 +10,12 @@
  *
  */
 
-namespace InHub\LaravelH5p\Storages;
+namespace Alsay\LaravelH5p\Storages;
 
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
-use InHub\LaravelH5p\Eloquents\H5pLibrary;
-use InHub\LaravelH5p\Eloquents\H5pTmpfile;
+use Alsay\LaravelH5p\Models\H5pLibrary;
+use Alsay\LaravelH5p\Models\H5pTmpfile;
 use H5peditorStorage;
 
 /**

@@ -1,6 +1,6 @@
 <?php
 
-namespace InHub\LaravelH5p\Facades;
+namespace Alsay\LaravelH5p\Facades;
 
 use Illuminate\Support\Facades\Facade;
 

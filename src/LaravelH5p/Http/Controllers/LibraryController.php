@@ -1,6 +1,6 @@
 <?php
 
-namespace InHub\LaravelH5p\Http\Controllers;
+namespace Alsay\LaravelH5p\Http\Controllers;
 
 
 use Illuminate\Contracts\Foundation\Application;
@@ -8,8 +8,8 @@ use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Routing\Controller;
-use InHub\LaravelH5p\Eloquents\H5pContent;
-use InHub\LaravelH5p\Eloquents\H5pLibrary;
+use Alsay\LaravelH5p\Models\H5pContent;
+use Alsay\LaravelH5p\Models\H5pLibrary;
 use H5PCore;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
